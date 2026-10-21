@@ -9,7 +9,7 @@
 </head>
 <body class="bg-slate-900 text-white min-h-screen font-sans flex flex-col justify-between">
 
-    <!-- Header / Navigation bar -->
+    <!-- Header / Navigation -->
     <header class="bg-slate-800 border-b border-slate-700 p-4 sticky top-0 z-50">
         <div class="max-w-md mx-auto flex justify-between items-center">
             <div class="flex items-center space-x-2">
@@ -19,53 +19,102 @@
             <div class="flex space-x-4 text-sm font-bold">
                 <div class="flex items-center space-x-1 text-orange-400">
                     <i class="fa-solid fa-fire"></i>
-                    <span id="streak-count">5</span>
+                    <span id="streak-count">1</span>
                 </div>
                 <div class="flex items-center space-x-1 text-yellow-400">
                     <i class="fa-solid fa-bolt"></i>
-                    <span id="xp-count">1250</span> XP
+                    <span id="xp-count">0</span> XP
                 </div>
             </div>
         </div>
     </header>
 
     <!-- Main Container -->
-    <main class="max-w-md mx-auto p-4 flex-1 w-full space-y-6">
+    <main class="max-w-md mx-auto p-4 flex-1 w-full space-y-5">
 
         <!-- Welcome Banner -->
         <section class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-5 shadow-lg">
             <h1 class="text-xl font-bold mb-1">Prêt pour un défi ? 🚀</h1>
-            <p class="text-xs text-indigo-100">Colle ton cours ou ton sujet, l'IA génère tes exercices ludiques instantanément.</p>
+            <p class="text-xs text-indigo-100">Envoie ton cours (Texte, Photo ou PDF) et laisse Gemini créer ton jeu !</p>
         </section>
 
-        <!-- Course Input Form -->
-        <section class="bg-slate-800 rounded-2xl p-4 border border-slate-700 shadow-md">
-            <label for="course-text" class="block text-sm font-semibold mb-2 text-slate-300">Ton cours ou sujet de révision :</label>
-            <textarea id="course-text" rows="4" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-slate-500" placeholder="Ex: La photosynthèse chez les plantes, ou les règles du théorème de Pythagore..."></textarea>
+        <!-- Configuration Clé API Gemini (Obligatoire pour l'IA en direct) -->
+        <section class="bg-slate-800 rounded-xl p-3 border border-indigo-500/40 text-xs shadow-md">
+            <label for="api-key" class="block font-semibold text-indigo-300 mb-1">🔑 Clé API Gemini :</label>
+            <input type="password" id="api-key" placeholder="Colle ta clé API Gemini ici..." class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-white text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500">
+            <p class="text-slate-400 text-[10px] mt-1">Nécessaire pour analyser vos textes, images et PDF en temps réel.</p>
+        </section>
+
+        <!-- Import Form -->
+        <section class="bg-slate-800 rounded-2xl p-4 border border-slate-700 shadow-md space-y-4">
             
-            <button id="generate-btn" onclick="generateQuiz()" class="w-full mt-3 bg-indigo-600 hover:bg-indigo-500 active:scale-95 transition-all text-white font-bold py-3 rounded-xl shadow-md flex items-center justify-center space-x-2">
+            <label class="block text-sm font-semibold text-slate-300">Importe ton cours :</label>
+
+            <!-- Input Tabs / Options -->
+            <div class="grid grid-cols-3 gap-2 text-xs">
+                <button type="button" onclick="switchMode('text')" id="tab-text" class="py-2.5 px-1 rounded-xl bg-indigo-600 text-white font-bold flex flex-col items-center justify-center space-y-1 transition-all">
+                    <i class="fa-solid fa-pen-to-square text-base"></i>
+                    <span>Texte</span>
+                </button>
+                <button type="button" onclick="switchMode('image')" id="tab-image" class="py-2.5 px-1 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold flex flex-col items-center justify-center space-y-1 transition-all">
+                    <i class="fa-solid fa-camera text-base"></i>
+                    <span>Photo / Image</span>
+                </button>
+                <button type="button" onclick="switchMode('pdf')" id="tab-pdf" class="py-2.5 px-1 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold flex flex-col items-center justify-center space-y-1 transition-all">
+                    <i class="fa-solid fa-file-pdf text-base"></i>
+                    <span>PDF</span>
+                </button>
+            </div>
+
+            <!-- Mode 1: Textarea Input -->
+            <div id="input-text-container">
+                <textarea id="course-text" rows="4" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-slate-500" placeholder="Colle ton cours ou écris le sujet ici..."></textarea>
+            </div>
+
+            <!-- Mode 2: Photo / Image Upload -->
+            <div id="input-image-container" class="hidden">
+                <label for="image-file" class="flex flex-col items-center justify-center w-full h-36 border-2 border-dashed border-indigo-500/50 hover:border-indigo-500 rounded-xl cursor-pointer bg-slate-900/50 hover:bg-slate-900 transition-all p-4 text-center">
+                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-indigo-400 mb-2"></i>
+                    <span class="text-xs font-semibold text-slate-300">Prendre une photo ou choisir une image</span>
+                    <span id="image-name" class="text-[10px] text-indigo-300 mt-1 truncate max-w-full">PNG, JPG, JPEG</span>
+                    <input id="image-file" type="file" accept="image/*" capture="environment" class="hidden" onchange="handleFileSelect(this, 'image-name')" />
+                </label>
+            </div>
+
+            <!-- Mode 3: PDF Upload -->
+            <div id="input-pdf-container" class="hidden">
+                <label for="pdf-file" class="flex flex-col items-center justify-center w-full h-36 border-2 border-dashed border-purple-500/50 hover:border-purple-500 rounded-xl cursor-pointer bg-slate-900/50 hover:bg-slate-900 transition-all p-4 text-center">
+                    <i class="fa-solid fa-file-invoice text-3xl text-purple-400 mb-2"></i>
+                    <span class="text-xs font-semibold text-slate-300">Sélectionner un fichier PDF</span>
+                    <span id="pdf-name" class="text-[10px] text-purple-300 mt-1 truncate max-w-full">Document PDF (.pdf)</span>
+                    <input id="pdf-file" type="file" accept=".pdf" class="hidden" onchange="handleFileSelect(this, 'pdf-name')" />
+                </label>
+            </div>
+
+            <!-- Action Button -->
+            <button id="generate-btn" onclick="startGeneration()" class="w-full bg-indigo-600 hover:bg-indigo-500 active:scale-95 transition-all text-white font-bold py-3 rounded-xl shadow-md flex items-center justify-center space-x-2">
                 <i class="fa-solid fa-wand-magic-sparkles"></i>
                 <span>Générer mes exercices</span>
             </button>
         </section>
 
-        <!-- Game / Quiz Area (Hidden by default) -->
+        <!-- Quiz Container -->
         <section id="quiz-area" class="hidden bg-slate-800 rounded-2xl p-5 border border-slate-700 shadow-md space-y-4">
             <div class="flex justify-between items-center">
-                <span class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Défi en cours</span>
-                <span class="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded-lg">+50 XP</span>
+                <span class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Défi Mémorisation</span>
+                <span class="text-xs bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2 py-1 rounded-lg">+50 XP</span>
             </div>
             
-            <p id="quiz-question" class="text-base font-semibold text-slate-100 leading-relaxed"></p>
+            <p id="quiz-question" class="text-sm font-semibold text-slate-100 leading-relaxed"></p>
 
             <div id="quiz-options" class="space-y-2"></div>
 
-            <div id="quiz-feedback" class="hidden p-3 rounded-xl text-sm font-semibold text-center"></div>
+            <div id="quiz-feedback" class="hidden p-3 rounded-xl text-sm font-semibold text-center transition-all"></div>
         </section>
 
     </main>
 
-    <!-- Bottom Navigation Bar -->
+    <!-- Navigation -->
     <nav class="bg-slate-800 border-t border-slate-700 p-3 sticky bottom-0">
         <div class="max-w-md mx-auto flex justify-around text-slate-400 text-xs">
             <button class="flex flex-col items-center text-indigo-400">
@@ -83,31 +132,126 @@
         </div>
     </nav>
 
-    <!-- Logic Script -->
+    <!-- Script JavaScript -->
     <script>
-        let xp = 1250;
+        let activeMode = 'text';
+        let xp = 0;
 
-        function generateQuiz() {
-            const input = document.getElementById('course-text').value.trim();
-            if (!input) {
-                alert('Veuillez entrer un texte ou un sujet de cours !');
+        function switchMode(mode) {
+            activeMode = mode;
+            
+            document.getElementById('input-text-container').classList.toggle('hidden', mode !== 'text');
+            document.getElementById('input-image-container').classList.toggle('hidden', mode !== 'image');
+            document.getElementById('input-pdf-container').classList.toggle('hidden', mode !== 'pdf');
+
+            ['text', 'image', 'pdf'].forEach(m => {
+                const btn = document.getElementById(tab-${m});
+                if (m === mode) {
+                    btn.className = "py-2.5 px-1 rounded-xl bg-indigo-600 text-white font-bold flex flex-col items-center justify-center space-y-1 transition-all";
+                } else {
+                    btn.className = "py-2.5 px-1 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold flex flex-col items-center justify-center space-y-1 transition-all";
+                }
+            });
+        }
+
+        function handleFileSelect(input, labelId) {
+            if (input.files && input.files[0]) {
+                document.getElementById(labelId).innerText = "📄 " + input.files[0].name;
+            }
+        }
+
+        // Convertir un fichier en Base64 pour l'envoyer à l'API Gemini
+        const fileToBase64 = (file) => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = error => reject(error);
+        });
+
+        async function startGeneration() {
+            const apiKey = document.getElementById('api-key').value.trim();
+            const btn = document.getElementById('generate-btn');
+
+            if (!apiKey) {
+                alert('Veuillez entrer votre clé API Gemini pour interroger l\'IA !');
                 return;
             }
 
-            const btn = document.getElementById('generate-btn');
-            btn.innerHTML = <i class="fa-solid fa-spinner animate-spin"></i> <span>Génération en cours...</span>;
+            let parts = [];
+            const promptInstruction = "Analyse ce cours ou document. Génère UNE question de quiz à choix multiples pédagogique et amusante avec 3 options de réponse (dont une seule correcte). Réponds STRICTEMENT au format JSON comme ceci, sans markdown autour : {\"question\": \"texte\", \"options\": [\"A\", \"B\", \"C\"], \"correctIndex\": 0}";
+
+            if (activeMode === 'text') {
+                const text = document.getElementById('course-text').value.trim();
+                if (!text) {
+                    alert('Veuillez entrer du texte !');
+                    return;
+                }
+                parts.push({ text: ${promptInstruction}\n\nCours : ${text} });
+            } else if (activeMode === 'image') {
+                const imgInput = document.getElementById('image-file');
+                if (!imgInput.files || !imgInput.files[0]) {
+                    alert('Veuillez sélectionner une image !');
+                    return;
+                }
+                const file = imgInput.files[0];
+                const base64Data = await fileToBase64(file);
+                parts.push({
+                    inline_data: {
+                        mime_type: file.type,
+                        data: base64Data
+                    }
+                });
+                parts.push({ text: promptInstruction });
+            } else if (activeMode === 'pdf') {
+                const pdfInput = document.getElementById('pdf-file');
+                if (!pdfInput.files || !pdfInput.files[0]) {
+                    alert('Veuillez sélectionner un fichier PDF !');
+                    return;
+                }
+                const file = pdfInput.files[0];
+                const base64Data = await fileToBase64(file);
+                parts.push({
+                    inline_data: {
+                        mime_type: "application/pdf",
+                        data: base64Data
+                    }
+                });
+                parts.push({ text: promptInstruction });
+            }
+
+            btn.innerHTML = <i class="fa-solid fa-spinner animate-spin"></i> <span>Gemini analyse le document...</span>;
             btn.disabled = true;
 
-            // Simulation d'une réponse IA basée sur le texte saisi
-            setTimeout(() => {
-                btn.innerHTML = <i class="fa-solid fa-wand-magic-sparkles"></i> <span>Générer mes exercices</span>;
-                btn.disabled = false;
+            try {
+                const response = await fetch(https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: parts }]
+                    })
+                });
 
-                showQuiz(input);
-            }, 1200);
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error.message);
+                }
+
+                let rawText = data.candidates[0].content.parts[0].text;
+                // Nettoyage au cas où l'IA met des balises markdown ```json
+                rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+                const jsonQuiz = JSON.parse(rawText);
+
+                renderQuiz(jsonQuiz.question, jsonQuiz.options, jsonQuiz.correctIndex);
+            } catch (err) {
+                alert('Erreur lors de la génération avec l\'API Gemini : ' + err.message);
+            }
+
+            btn.innerHTML = <i class="fa-solid fa-wand-magic-sparkles"></i> <span>Générer mes exercices</span>;
+            btn.disabled = false;
         }
 
-        function showQuiz(topic) {
+        function renderQuiz(questionText, optionsArray, correctIdx) {
             const quizArea = document.getElementById('quiz-area');
             const questionEl = document.getElementById('quiz-question');
             const optionsEl = document.getElementById('quiz-options');
@@ -115,39 +259,37 @@
 
             feedbackEl.classList.add('hidden');
             quizArea.classList.remove('hidden');
-
-            questionEl.innerText = Question flash sur : "${topic.substring(0, 40)}..."\n\nQuel est l'objectif principal résumé dans ce concept ?;
-
-            const options = [
-                { text: "Comprendre et appliquer le principe de base.", correct: true },
-                { text: "Ignorer les détails et passer à la suite.", correct: false },
-                { text: "Mémoriser uniquement sans pratiquer.", correct: false }
-            ];
+            questionEl.innerText = questionText;
 
             optionsEl.innerHTML = '';
-            options.forEach((opt) => {
-                const button = document.createElement('button');
-                button.className = "w-full text-left bg-slate-700 hover:bg-slate-600 active:scale-98 p-3 rounded-xl text-sm transition-all border border-slate-600";
-                button.innerText = opt.text;
-                button.onclick = () => checkAnswer(opt.correct);
-                optionsEl.appendChild(button);
+            optionsArray.forEach((optionText, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left bg-slate-700 hover:bg-slate-600 active:scale-98 p-3 rounded-xl text-sm transition-all border border-slate-600 flex items-center justify-between";
+                btn.innerHTML = <span>${optionText}</span> <i class="fa-regular fa-circle text-slate-400"></i>;
+                btn.onclick = () => verifyAnswer(idx === correctIdx);
+                optionsEl.appendChild(btn);
             });
+
+            quizArea.scrollIntoView({ behavior: 'smooth' });
         }
 
-        function checkAnswer(isCorrect) {
+        function verifyAnswer(isCorrect) {
             const feedbackEl = document.getElementById('quiz-feedback');
-            feedbackEl.classList.remove('hidden', 'bg-emerald-500/20', 'text-emerald-400', 'bg-rose-500/20', 'text-rose-400');
+            feedbackEl.classList.remove('hidden', 'bg-emerald-500/20', 'text-emerald-400', 'bg-rose-500/20', 'text-rose-400', 'border-emerald-500/30', 'border-rose-500/30');
 
             if (isCorrect) {
                 xp += 50;
                 document.getElementById('xp-count').innerText = xp;
-                feedbackEl.classList.add('bg-emerald-500/20', 'text-emerald-400');
-                feedbackEl.innerHTML = "🎉 Bravo ! Bonne réponse ! (+50 XP)";
+                feedbackEl.classList.add('bg-emerald-500/20', 'text-emerald-400', 'border', 'border-emerald-500/30');
+                feedbackEl.innerHTML = "🎉 Excellent ! Bonne réponse ! (+50 XP)";
             } else {
-                feedbackEl.classList.add('bg-rose-500/20', 'text-rose-400');
-                feedbackEl.innerHTML = "💡 Presque ! Révise ce passage et réessaie.";
+                feedbackEl.classList.add('bg-rose-500/20', 'text-rose-400', 'border', 'border-rose-500/30');
+                feedbackEl.innerHTML = "💡 Mauvaise réponse ! Relis bien le cours et réessaie.";
             }
         }
     </script>
 </body>
 </html>
+
+
+
