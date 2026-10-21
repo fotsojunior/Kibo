@@ -1,1 +1,153 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kibo - Apprendre en s'amusant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-900 text-white min-h-screen font-sans flex flex-col justify-between">
 
+    <!-- Header / Navigation bar -->
+    <header class="bg-slate-800 border-b border-slate-700 p-4 sticky top-0 z-50">
+        <div class="max-w-md mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <span class="text-2xl font-black text-indigo-400">KIBO</span>
+                <span class="text-xs bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full border border-indigo-500/30">AI</span>
+            </div>
+            <div class="flex space-x-4 text-sm font-bold">
+                <div class="flex items-center space-x-1 text-orange-400">
+                    <i class="fa-solid fa-fire"></i>
+                    <span id="streak-count">5</span>
+                </div>
+                <div class="flex items-center space-x-1 text-yellow-400">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span id="xp-count">1250</span> XP
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-md mx-auto p-4 flex-1 w-full space-y-6">
+
+        <!-- Welcome Banner -->
+        <section class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-5 shadow-lg">
+            <h1 class="text-xl font-bold mb-1">Prêt pour un défi ? 🚀</h1>
+            <p class="text-xs text-indigo-100">Colle ton cours ou ton sujet, l'IA génère tes exercices ludiques instantanément.</p>
+        </section>
+
+        <!-- Course Input Form -->
+        <section class="bg-slate-800 rounded-2xl p-4 border border-slate-700 shadow-md">
+            <label for="course-text" class="block text-sm font-semibold mb-2 text-slate-300">Ton cours ou sujet de révision :</label>
+            <textarea id="course-text" rows="4" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-slate-500" placeholder="Ex: La photosynthèse chez les plantes, ou les règles du théorème de Pythagore..."></textarea>
+            
+            <button id="generate-btn" onclick="generateQuiz()" class="w-full mt-3 bg-indigo-600 hover:bg-indigo-500 active:scale-95 transition-all text-white font-bold py-3 rounded-xl shadow-md flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <span>Générer mes exercices</span>
+            </button>
+        </section>
+
+        <!-- Game / Quiz Area (Hidden by default) -->
+        <section id="quiz-area" class="hidden bg-slate-800 rounded-2xl p-5 border border-slate-700 shadow-md space-y-4">
+            <div class="flex justify-between items-center">
+                <span class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Défi en cours</span>
+                <span class="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded-lg">+50 XP</span>
+            </div>
+            
+            <p id="quiz-question" class="text-base font-semibold text-slate-100 leading-relaxed"></p>
+
+            <div id="quiz-options" class="space-y-2"></div>
+
+            <div id="quiz-feedback" class="hidden p-3 rounded-xl text-sm font-semibold text-center"></div>
+        </section>
+
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="bg-slate-800 border-t border-slate-700 p-3 sticky bottom-0">
+        <div class="max-w-md mx-auto flex justify-around text-slate-400 text-xs">
+            <button class="flex flex-col items-center text-indigo-400">
+                <i class="fa-solid fa-gamepad text-lg mb-1"></i>
+                <span>Jouer</span>
+            </button>
+            <button class="flex flex-col items-center hover:text-white">
+                <i class="fa-solid fa-trophy text-lg mb-1"></i>
+                <span>Classement</span>
+            </button>
+            <button class="flex flex-col items-center hover:text-white">
+                <i class="fa-solid fa-user text-lg mb-1"></i>
+                <span>Profil</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Logic Script -->
+    <script>
+        let xp = 1250;
+
+        function generateQuiz() {
+            const input = document.getElementById('course-text').value.trim();
+            if (!input) {
+                alert('Veuillez entrer un texte ou un sujet de cours !');
+                return;
+            }
+
+            const btn = document.getElementById('generate-btn');
+            btn.innerHTML = <i class="fa-solid fa-spinner animate-spin"></i> <span>Génération en cours...</span>;
+            btn.disabled = true;
+
+            // Simulation d'une réponse IA basée sur le texte saisi
+            setTimeout(() => {
+                btn.innerHTML = <i class="fa-solid fa-wand-magic-sparkles"></i> <span>Générer mes exercices</span>;
+                btn.disabled = false;
+
+                showQuiz(input);
+            }, 1200);
+        }
+
+        function showQuiz(topic) {
+            const quizArea = document.getElementById('quiz-area');
+            const questionEl = document.getElementById('quiz-question');
+            const optionsEl = document.getElementById('quiz-options');
+            const feedbackEl = document.getElementById('quiz-feedback');
+
+            feedbackEl.classList.add('hidden');
+            quizArea.classList.remove('hidden');
+
+            questionEl.innerText = Question flash sur : "${topic.substring(0, 40)}..."\n\nQuel est l'objectif principal résumé dans ce concept ?;
+
+            const options = [
+                { text: "Comprendre et appliquer le principe de base.", correct: true },
+                { text: "Ignorer les détails et passer à la suite.", correct: false },
+                { text: "Mémoriser uniquement sans pratiquer.", correct: false }
+            ];
+
+            optionsEl.innerHTML = '';
+            options.forEach((opt) => {
+                const button = document.createElement('button');
+                button.className = "w-full text-left bg-slate-700 hover:bg-slate-600 active:scale-98 p-3 rounded-xl text-sm transition-all border border-slate-600";
+                button.innerText = opt.text;
+                button.onclick = () => checkAnswer(opt.correct);
+                optionsEl.appendChild(button);
+            });
+        }
+
+        function checkAnswer(isCorrect) {
+            const feedbackEl = document.getElementById('quiz-feedback');
+            feedbackEl.classList.remove('hidden', 'bg-emerald-500/20', 'text-emerald-400', 'bg-rose-500/20', 'text-rose-400');
+
+            if (isCorrect) {
+                xp += 50;
+                document.getElementById('xp-count').innerText = xp;
+                feedbackEl.classList.add('bg-emerald-500/20', 'text-emerald-400');
+                feedbackEl.innerHTML = "🎉 Bravo ! Bonne réponse ! (+50 XP)";
+            } else {
+                feedbackEl.classList.add('bg-rose-500/20', 'text-rose-400');
+                feedbackEl.innerHTML = "💡 Presque ! Révise ce passage et réessaie.";
+            }
+        }
+    </script>
+</body>
+</html>
