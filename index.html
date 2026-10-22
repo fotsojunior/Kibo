@@ -1,295 +1,423 @@
+
+            
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kibo - Apprendre en s'amusant</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KIPO — Apprendre autrement</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f6fb;
+  color: #172033;
+}
+
+header {
+  background: #5146e5;
+  color: white;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-size: 26px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.points {
+  background: white;
+  color: #5146e5;
+  padding: 9px 12px;
+  border-radius: 20px;
+  font-weight: bold;
+}
+
+.container {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+}
+
+.welcome {
+  background: white;
+  padding: 22px;
+  border-radius: 18px;
+  margin-bottom: 18px;
+  box-shadow: 0 3px 12px #00000008;
+}
+
+.welcome h1 {
+  margin-top: 0;
+  font-size: 25px;
+}
+
+.welcome p {
+  color: #687086;
+  line-height: 1.6;
+}
+
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 16px;
+}
+
+.suggestions button,
+.action-button {
+  border: 1px solid #deddfc;
+  background: #f5f4ff;
+  color: #5146e5;
+  padding: 11px 13px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.chat {
+  background: white;
+  border-radius: 18px;
+  padding: 18px;
+  min-height: 280px;
+  box-shadow: 0 3px 12px #00000008;
+}
+
+#messages {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.message {
+  padding: 13px;
+  border-radius: 13px;
+  max-width: 90%;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.bot {
+  background: #f0efff;
+  align-self: flex-start;
+}
+
+.user {
+  background: #5146e5;
+  color: white;
+  align-self: flex-end;
+}
+
+.composer {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+#question {
+  min-width: 0;
+  flex: 1;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 13px;
+  font-size: 15px;
+}
+
+.send {
+  background: #5146e5;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 17px;
+  cursor: pointer;
+}
+
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 14px;
+}
+
+.section-title {
+  margin-top: 25px;
+  margin-bottom: 12px;
+}
+
+.quiz-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  margin-top: 15px;
+}
+
+.quiz-card button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 12px;
+  margin: 9px 0;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.quiz-card button:hover {
+  background: #f0efff;
+}
+
+#fileInput {
+  display: none;
+}
+
+footer {
+  text-align: center;
+  color: #7a8193;
+  padding: 25px;
+  font-size: 13px;
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 12px;
+  }
+
+  .composer {
+    gap: 5px;
+  }
+
+  .send {
+    padding: 10px;
+  }
+
+  .welcome h1 {
+    font-size: 22px;
+  }
+}
+</style>
 </head>
-<body class="bg-slate-900 text-white min-h-screen font-sans flex flex-col justify-between">
 
-    <!-- Header / Navigation -->
-    <header class="bg-slate-800 border-b border-slate-700 p-4 sticky top-0 z-50">
-        <div class="max-w-md mx-auto flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <span class="text-2xl font-black text-indigo-400">KIBO</span>
-                <span class="text-xs bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full border border-indigo-500/30">AI</span>
-            </div>
-            <div class="flex space-x-4 text-sm font-bold">
-                <div class="flex items-center space-x-1 text-orange-400">
-                    <i class="fa-solid fa-fire"></i>
-                    <span id="streak-count">1</span>
-                </div>
-                <div class="flex items-center space-x-1 text-yellow-400">
-                    <i class="fa-solid fa-bolt"></i>
-                    <span id="xp-count">0</span> XP
-                </div>
-            </div>
-        </div>
-    </header>
+<body>
 
-    <!-- Main Container -->
-    <main class="max-w-md mx-auto p-4 flex-1 w-full space-y-5">
+<header>
+  <div class="logo">KIPO</div>
+  <div class="points">⭐ <span id="points">0</span> XP</div>
+</header>
 
-        <!-- Welcome Banner -->
-        <section class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-5 shadow-lg">
-            <h1 class="text-xl font-bold mb-1">Prêt pour un défi ? 🚀</h1>
-            <p class="text-xs text-indigo-100">Envoie ton cours (Texte, Photo ou PDF) et laisse Gemini créer ton jeu !</p>
-        </section>
+<main class="container">
 
-        <!-- Configuration Clé API Gemini (Obligatoire pour l'IA en direct) -->
-        <section class="bg-slate-800 rounded-xl p-3 border border-indigo-500/40 text-xs shadow-md">
-            <label for="api-key" class="block font-semibold text-indigo-300 mb-1">🔑 Clé API Gemini :</label>
-            <input type="password" id="api-key" placeholder="Colle ta clé API Gemini ici..." class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-white text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500">
-            <p class="text-slate-400 text-[10px] mt-1">Nécessaire pour analyser vos textes, images et PDF en temps réel.</p>
-        </section>
+  <section class="welcome">
+    <h1>Apprends en t'amusant ! 🚀</h1>
+    <p>
+      Pose tes questions, importe tes cours et transforme
+      tes connaissances en défis éducatifs.
+    </p>
 
-        <!-- Import Form -->
-        <section class="bg-slate-800 rounded-2xl p-4 border border-slate-700 shadow-md space-y-4">
-            
-            <label class="block text-sm font-semibold text-slate-300">Importe ton cours :</label>
+    <div class="suggestions">
+      <button onclick="suggest('Explique-moi le droit du travail simplement.')">
+        ⚖️ Droit du travail
+      </button>
 
-            <!-- Input Tabs / Options -->
-            <div class="grid grid-cols-3 gap-2 text-xs">
-                <button type="button" onclick="switchMode('text')" id="tab-text" class="py-2.5 px-1 rounded-xl bg-indigo-600 text-white font-bold flex flex-col items-center justify-center space-y-1 transition-all">
-                    <i class="fa-solid fa-pen-to-square text-base"></i>
-                    <span>Texte</span>
-                </button>
-                <button type="button" onclick="switchMode('image')" id="tab-image" class="py-2.5 px-1 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold flex flex-col items-center justify-center space-y-1 transition-all">
-                    <i class="fa-solid fa-camera text-base"></i>
-                    <span>Photo / Image</span>
-                </button>
-                <button type="button" onclick="switchMode('pdf')" id="tab-pdf" class="py-2.5 px-1 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold flex flex-col items-center justify-center space-y-1 transition-all">
-                    <i class="fa-solid fa-file-pdf text-base"></i>
-                    <span>PDF</span>
-                </button>
-            </div>
+      <button onclick="suggest('Aide-moi à réviser les mathématiques.')">
+        📐 Mathématiques
+      </button>
 
-            <!-- Mode 1: Textarea Input -->
-            <div id="input-text-container">
-                <textarea id="course-text" rows="4" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-slate-500" placeholder="Colle ton cours ou écris le sujet ici..."></textarea>
-            </div>
+      <button onclick="suggest('Apprends-moi une notion de biologie.')">
+        🧬 Biologie
+      </button>
+    </div>
+  </section>
 
-            <!-- Mode 2: Photo / Image Upload -->
-            <div id="input-image-container" class="hidden">
-                <label for="image-file" class="flex flex-col items-center justify-center w-full h-36 border-2 border-dashed border-indigo-500/50 hover:border-indigo-500 rounded-xl cursor-pointer bg-slate-900/50 hover:bg-slate-900 transition-all p-4 text-center">
-                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-indigo-400 mb-2"></i>
-                    <span class="text-xs font-semibold text-slate-300">Prendre une photo ou choisir une image</span>
-                    <span id="image-name" class="text-[10px] text-indigo-300 mt-1 truncate max-w-full">PNG, JPG, JPEG</span>
-                    <input id="image-file" type="file" accept="image/*" capture="environment" class="hidden" onchange="handleFileSelect(this, 'image-name')" />
-                </label>
-            </div>
+  <section class="chat">
+    <div id="messages">
+      <div class="message bot">
+        👋 Bonjour ! Je suis KIPO, ton assistant éducatif.
 
-            <!-- Mode 3: PDF Upload -->
-            <div id="input-pdf-container" class="hidden">
-                <label for="pdf-file" class="flex flex-col items-center justify-center w-full h-36 border-2 border-dashed border-purple-500/50 hover:border-purple-500 rounded-xl cursor-pointer bg-slate-900/50 hover:bg-slate-900 transition-all p-4 text-center">
-                    <i class="fa-solid fa-file-invoice text-3xl text-purple-400 mb-2"></i>
-                    <span class="text-xs font-semibold text-slate-300">Sélectionner un fichier PDF</span>
-                    <span id="pdf-name" class="text-[10px] text-purple-300 mt-1 truncate max-w-full">Document PDF (.pdf)</span>
-                    <input id="pdf-file" type="file" accept=".pdf" class="hidden" onchange="handleFileSelect(this, 'pdf-name')" />
-                </label>
-            </div>
+        Que souhaites-tu apprendre aujourd'hui ?
 
-            <!-- Action Button -->
-            <button id="generate-btn" onclick="startGeneration()" class="w-full bg-indigo-600 hover:bg-indigo-500 active:scale-95 transition-all text-white font-bold py-3 rounded-xl shadow-md flex items-center justify-center space-x-2">
-                <i class="fa-solid fa-wand-magic-sparkles"></i>
-                <span>Générer mes exercices</span>
-            </button>
-        </section>
+        Tu peux écrire une question ou sélectionner un document.
+      </div>
+    </div>
 
-        <!-- Quiz Container -->
-        <section id="quiz-area" class="hidden bg-slate-800 rounded-2xl p-5 border border-slate-700 shadow-md space-y-4">
-            <div class="flex justify-between items-center">
-                <span class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Défi Mémorisation</span>
-                <span class="text-xs bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2 py-1 rounded-lg">+50 XP</span>
-            </div>
-            
-            <p id="quiz-question" class="text-sm font-semibold text-slate-100 leading-relaxed"></p>
+    <form class="composer" id="chatForm">
+      <input
+        id="question"
+        type="text"
+        placeholder="Pose ta question..."
+        autocomplete="off"
+        required
+      >
+      <button class="send" type="submit">Envoyer</button>
+    </form>
 
-            <div id="quiz-options" class="space-y-2"></div>
+    <div class="tools">
+      <button class="action-button" onclick="document.getElementById('fileInput').click()">
+        📎 Ajouter un document
+      </button>
 
-            <div id="quiz-feedback" class="hidden p-3 rounded-xl text-sm font-semibold text-center transition-all"></div>
-        </section>
+      <input
+        type="file"
+        id="fileInput"
+        accept=".pdf,.txt,.doc,.docx,.png,.jpg,.jpeg,.webp"
+        multiple
+      >
 
-    </main>
+      <button class="action-button" onclick="createQuiz()">
+        🎮 Créer un quiz
+      </button>
 
-    <!-- Navigation -->
-    <nav class="bg-slate-800 border-t border-slate-700 p-3 sticky bottom-0">
-        <div class="max-w-md mx-auto flex justify-around text-slate-400 text-xs">
-            <button class="flex flex-col items-center text-indigo-400">
-                <i class="fa-solid fa-gamepad text-lg mb-1"></i>
-                <span>Jouer</span>
-            </button>
-            <button class="flex flex-col items-center hover:text-white">
-                <i class="fa-solid fa-trophy text-lg mb-1"></i>
-                <span>Classement</span>
-            </button>
-            <button class="flex flex-col items-center hover:text-white">
-                <i class="fa-solid fa-user text-lg mb-1"></i>
-                <span>Profil</span>
-            </button>
-        </div>
-    </nav>
+      <button class="action-button" onclick="clearChat()">
+        🗑️ Nouveau chat
+      </button>
+    </div>
 
-    <!-- Script JavaScript -->
-    <script>
-        let activeMode = 'text';
-        let xp = 0;
+    <p id="fileStatus" style="font-size:13px;color:#687086;"></p>
+  </section>
 
-        function switchMode(mode) {
-            activeMode = mode;
-            
-            document.getElementById('input-text-container').classList.toggle('hidden', mode !== 'text');
-            document.getElementById('input-image-container').classList.toggle('hidden', mode !== 'image');
-            document.getElementById('input-pdf-container').classList.toggle('hidden', mode !== 'pdf');
+  <h2 class="section-title">🎯 Ton défi du jour</h2>
 
-            ['text', 'image', 'pdf'].forEach(m => {
-                const btn = document.getElementById(tab-${m});
-                if (m === mode) {
-                    btn.className = "py-2.5 px-1 rounded-xl bg-indigo-600 text-white font-bold flex flex-col items-center justify-center space-y-1 transition-all";
-                } else {
-                    btn.className = "py-2.5 px-1 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold flex flex-col items-center justify-center space-y-1 transition-all";
-                }
-            });
-        }
+  <section class="quiz-card" id="quiz">
+    <h3>Question rapide</h3>
+    <p>Combien font 8 × 7 ?</p>
 
-        function handleFileSelect(input, labelId) {
-            if (input.files && input.files[0]) {
-                document.getElementById(labelId).innerText = "📄 " + input.files[0].name;
-            }
-        }
+    <button onclick="answer(this, false)">54</button>
+    <button onclick="answer(this, true)">56</button>
+    <button onclick="answer(this, false)">64</button>
 
-        // Convertir un fichier en Base64 pour l'envoyer à l'API Gemini
-        const fileToBase64 = (file) => new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result.split(',')[1]);
-            reader.onerror = error => reject(error);
-        });
+    <p id="quizResult"></p>
+  </section>
 
-        async function startGeneration() {
-            const apiKey = document.getElementById('api-key').value.trim();
-            const btn = document.getElementById('generate-btn');
+</main>
 
-            if (!apiKey) {
-                alert('Veuillez entrer votre clé API Gemini pour interroger l\'IA !');
-                return;
-            }
+<footer>
+  KIPO © 2026 — Apprendre, comprendre, progresser.
+</footer>
 
-            let parts = [];
-            const promptInstruction = "Analyse ce cours ou document. Génère UNE question de quiz à choix multiples pédagogique et amusante avec 3 options de réponse (dont une seule correcte). Réponds STRICTEMENT au format JSON comme ceci, sans markdown autour : {\"question\": \"texte\", \"options\": [\"A\", \"B\", \"C\"], \"correctIndex\": 0}";
+<script>
+let points = 0;
+let quizAnswered = false;
 
-            if (activeMode === 'text') {
-                const text = document.getElementById('course-text').value.trim();
-                if (!text) {
-                    alert('Veuillez entrer du texte !');
-                    return;
-                }
-                parts.push({ text: ${promptInstruction}\n\nCours : ${text} });
-            } else if (activeMode === 'image') {
-                const imgInput = document.getElementById('image-file');
-                if (!imgInput.files || !imgInput.files[0]) {
-                    alert('Veuillez sélectionner une image !');
-                    return;
-                }
-                const file = imgInput.files[0];
-                const base64Data = await fileToBase64(file);
-                parts.push({
-                    inline_data: {
-                        mime_type: file.type,
-                        data: base64Data
-                    }
-                });
-                parts.push({ text: promptInstruction });
-            } else if (activeMode === 'pdf') {
-                const pdfInput = document.getElementById('pdf-file');
-                if (!pdfInput.files || !pdfInput.files[0]) {
-                    alert('Veuillez sélectionner un fichier PDF !');
-                    return;
-                }
-                const file = pdfInput.files[0];
-                const base64Data = await fileToBase64(file);
-                parts.push({
-                    inline_data: {
-                        mime_type: "application/pdf",
-                        data: base64Data
-                    }
-                });
-                parts.push({ text: promptInstruction });
-            }
+function addMessage(text, type) {
+  const messages = document.getElementById("messages");
+  const bubble = document.createElement("div");
 
-            btn.innerHTML = <i class="fa-solid fa-spinner animate-spin"></i> <span>Gemini analyse le document...</span>;
-            btn.disabled = true;
+  bubble.className = "message " + type;
+  bubble.textContent = text;
 
-            try {
-                const response = await fetch(https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: parts }]
-                    })
-                });
+  messages.appendChild(bubble);
+  messages.scrollTop = messages.scrollHeight;
+}
 
-                const data = await response.json();
-                
-                if (data.error) {
-                    throw new Error(data.error.message);
-                }
+function updatePoints(amount) {
+  points += amount;
+  document.getElementById("points").textContent = points;
+}
 
-                let rawText = data.candidates[0].content.parts[0].text;
-                // Nettoyage au cas où l'IA met des balises markdown ```json
-                rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
-                const jsonQuiz = JSON.parse(rawText);
+function suggest(text) {
+  document.getElementById("question").value = text;
+  document.getElementById("question").focus();
+}
 
-                renderQuiz(jsonQuiz.question, jsonQuiz.options, jsonQuiz.correctIndex);
-            } catch (err) {
-                alert('Erreur lors de la génération avec l\'API Gemini : ' + err.message);
-            }
+document.getElementById("chatForm").addEventListener("submit", function(event) {
+  event.preventDefault();
 
-            btn.innerHTML = <i class="fa-solid fa-wand-magic-sparkles"></i> <span>Générer mes exercices</span>;
-            btn.disabled = false;
-        }
+  const input = document.getElementById("question");
+  const question = input.value.trim();
 
-        function renderQuiz(questionText, optionsArray, correctIdx) {
-            const quizArea = document.getElementById('quiz-area');
-            const questionEl = document.getElementById('quiz-question');
-            const optionsEl = document.getElementById('quiz-options');
-            const feedbackEl = document.getElementById('quiz-feedback');
+  if (!question) return;
 
-            feedbackEl.classList.add('hidden');
-            quizArea.classList.remove('hidden');
-            questionEl.innerText = questionText;
+  addMessage(question, "user");
+  input.value = "";
 
-            optionsEl.innerHTML = '';
-            optionsArray.forEach((optionText, idx) => {
-                const btn = document.createElement('button');
-                btn.className = "w-full text-left bg-slate-700 hover:bg-slate-600 active:scale-98 p-3 rounded-xl text-sm transition-all border border-slate-600 flex items-center justify-between";
-                btn.innerHTML = <span>${optionText}</span> <i class="fa-regular fa-circle text-slate-400"></i>;
-                btn.onclick = () => verifyAnswer(idx === correctIdx);
-                optionsEl.appendChild(btn);
-            });
+  setTimeout(function() {
+    addMessage(
+      "Je suis actuellement en mode prototype. Pour répondre précisément à ta question, KIPO devra être connecté à un véritable service d'intelligence artificielle. Nous allons ajouter cette connexion à l'étape suivante.",
+      "bot"
+    );
+  }, 400);
+});
 
-            quizArea.scrollIntoView({ behavior: 'smooth' });
-        }
+function answer(button, correct) {
+  if (quizAnswered) return;
 
-        function verifyAnswer(isCorrect) {
-            const feedbackEl = document.getElementById('quiz-feedback');
-            feedbackEl.classList.remove('hidden', 'bg-emerald-500/20', 'text-emerald-400', 'bg-rose-500/20', 'text-rose-400', 'border-emerald-500/30', 'border-rose-500/30');
+  quizAnswered = true;
 
-            if (isCorrect) {
-                xp += 50;
-                document.getElementById('xp-count').innerText = xp;
-                feedbackEl.classList.add('bg-emerald-500/20', 'text-emerald-400', 'border', 'border-emerald-500/30');
-                feedbackEl.innerHTML = "🎉 Excellent ! Bonne réponse ! (+50 XP)";
-            } else {
-                feedbackEl.classList.add('bg-rose-500/20', 'text-rose-400', 'border', 'border-rose-500/30');
-                feedbackEl.innerHTML = "💡 Mauvaise réponse ! Relis bien le cours et réessaie.";
-            }
-        }
-    </script>
+  const result = document.getElementById("quizResult");
+
+  if (correct) {
+    result.textContent = "🎉 Bravo ! Bonne réponse : 56. Tu gagnes 10 XP.";
+    updatePoints(10);
+  } else {
+    result.textContent = "Pas tout à fait ! 8 × 7 = 56. Continue à apprendre !";
+  }
+
+  const buttons = document.querySelectorAll("#quiz button");
+
+  buttons.forEach(function(item) {
+    item.disabled = true;
+  });
+}
+
+function createQuiz() {
+  addMessage(
+    "🎮 Je veux transformer mes cours en quiz interactif.",
+    "user"
+  );
+
+  addMessage(
+    "La génération automatique des quiz sera disponible après la connexion de KIPO à l'IA. Pour l'instant, tu peux essayer le défi du jour.",
+    "bot"
+  );
+
+  document.getElementById("quiz").scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+  });
+}
+
+function clearChat() {
+  document.getElementById("messages").replaceChildren();
+
+  addMessage(
+    "Nouvelle conversation ! 👋 Sur quel sujet souhaites-tu travailler ?",
+    "bot"
+  );
+}
+
+document.getElementById("fileInput").addEventListener("change", function(event) {
+  const files = Array.from(event.target.files);
+
+  if (!files.length) return;
+
+  const names = files.map(function(file) {
+    return file.name;
+  });
+
+  document.getElementById("fileStatus").textContent =
+    "Documents sélectionnés : " + names.join(", ");
+
+  addMessage(
+    "📎 Documents sélectionnés : " + names.join(", "),
+    "user"
+  );
+
+  addMessage(
+    "Les fichiers sont sélectionnés sur ton appareil, mais ils ne sont pas encore envoyés à un serveur. Nous ajouterons ensuite l'envoi sécurisé et l'analyse des documents par l'IA.",
+    "bot"
+  );
+});
+</script>
+
 </body>
 </html>
-
-
-
